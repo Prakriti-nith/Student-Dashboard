@@ -1,6 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+    <h1></h1>
     <h1>Register</h1>
     {% from "includes/_formhelpers.html" import render_field %}
     <form method="POST" action="">
@@ -9,9 +10,6 @@
         </div>
         <div class="form-group">
             {{render_field(form.email, class_="form-control")}}
-        </div>
-        <div class="form-group">
-            {{render_field(form.username, class_="form-control")}}
         </div>
         <div class="form-group">
             {{render_field(form.password, class_="form-control")}}
