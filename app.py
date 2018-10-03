@@ -21,6 +21,7 @@ def index():
 class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)])
     email = StringField('Email', [validators.Length(min=6, max=50)])
+    roll_number = StringField('Roll Number', [validators.Length(min=5, max=15)])
     password = PasswordField('Password', [
         validators.DataRequired(),
         validators.EqualTo('confirm', message='Passwords do not match')
@@ -33,13 +34,14 @@ def register():
     if request.method == 'POST' and form.validate():
         name = form.name.data
         email = form.email.data
+        roll_number = form.roll_number.data
         password = sha256_crypt.encrypt(str(form.password.data))
 
         # Create cursor
         cur = mysql.connection.cursor()
 
         # Execute query
-        cur.execute("INSERT INTO user(name, email, password, type) VALUES(%s, %s, %s, %s)", (name, email, password, "student"))
+        cur.execute("INSERT INTO user(name, email, roll_number, password) VALUES(%s, %s, %s, %s)", (name, email, roll_number, password))
 
         # Commit to DB
         mysql.connection.commit()
@@ -49,7 +51,7 @@ def register():
 
         flash('You are now registered and can log in', 'success')
 
-        redirect(url_for('index'))
+        return redirect(url_for('index'))
 
     return render_template('register.html', form=form)
 
