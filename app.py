@@ -120,7 +120,15 @@ def logout():
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
-    return render_template('dashboard.html')
+    # Create cursor
+    cur = mysql.connection.cursor()
+
+    # Get user by roll_number
+    cur.execute("SELECT * FROM data WHERE students__rollno  = '15mi522'")
+
+    data = cur.fetchall()
+    print(data);
+    return render_template('dashboard.html' , data=data)
 
 if __name__ == '__main__':
     app.secret_key='secret123'
