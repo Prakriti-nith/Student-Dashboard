@@ -6,6 +6,7 @@ from functools import wraps
 
 app = Flask(__name__)
 
+temp = ""
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -66,6 +67,7 @@ def login():
     if request.method == 'POST':
         # Get Form Fields
         roll_number = request.form['roll_number']
+
         password_candidate = request.form['password']
 
         # Create cursor
@@ -87,6 +89,8 @@ def login():
                 session['roll_number'] = roll_number
 
                 flash('Yoe are now logged in', 'success')
+                temp = roll_number
+                print(typeof(temp))
                 return redirect(url_for('dashboard'))
             else:
                 error = 'Invalid Login'
@@ -122,12 +126,10 @@ def logout():
 def dashboard():
     # Create cursor
     cur = mysql.connection.cursor()
-
     # Get user by roll_number
-    cur.execute("SELECT * FROM data WHERE students__rollno  = '15mi522'")
-
+    cur.execute("SELECT * FROM data WHERE students__rollno  = %s", str(temp))
     data = cur.fetchall()
-    print(data);
+    print(data)
     return render_template('dashboard.html' , data=data)
 
 if __name__ == '__main__':
