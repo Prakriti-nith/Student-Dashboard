@@ -5,8 +5,6 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 
 app = Flask(__name__)
-
-temp = ""
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -89,8 +87,6 @@ def login():
                 session['roll_number'] = roll_number
 
                 flash('Yoe are now logged in', 'success')
-                temp = roll_number
-                print(typeof(temp))
                 return redirect(url_for('dashboard'))
             else:
                 error = 'Invalid Login'
@@ -127,11 +123,11 @@ def dashboard():
     # Create cursor
     cur = mysql.connection.cursor()
     # Get user by roll_number
-    cur.execute("SELECT * FROM data WHERE students__rollno  = %s", str(temp))
+    cur.execute("SELECT * FROM data WHERE students__rollno  = '{}'" .format(session['roll_number']))
     data = cur.fetchall()
     print(data)
     return render_template('dashboard.html' , data=data)
 
 if __name__ == '__main__':
     app.secret_key='secret123'
-    app.run(debug=True)
+app.run(debug=True)
