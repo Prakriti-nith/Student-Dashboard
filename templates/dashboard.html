@@ -2,4 +2,14 @@
 
 {% block body %}
     <h1>Dashboard <small>Welcome {{session.roll_number}}</small></h1>
+<!--     <h2>Working to show some output !</h2> -->
+    <table border="1" cellpadding="5" cellspacing = "5" >
+    	{% for row in data %}
+    	<tr>
+    		{% for d in row %}
+    			<td>{{ row[d] }}</td>
+    		{% endfor %}
+    	</tr>
+    {% endfor %}
+    </table>
 {% endblock %}
