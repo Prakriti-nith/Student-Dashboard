@@ -181,7 +181,7 @@ def dashboard():
         stu_sub_list.append(i['subject_name'])
         stu_sub_list.append(i['ObtainCR'])
         stu_sub_list.append(i['TotalCR'])
-        stu_sub_list.append(int(i['semester_no']) % 10)
+        stu_sub_list.append(int(i['semester_no'][-1]) % 10)
         student_subjects_list.append(stu_sub_list)
         # print(i)
     print(student_subjects_list)
