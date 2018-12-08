@@ -3,14 +3,16 @@ from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
+import time
+import datetime
 
 app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'gupta@123'
 #Change Password Accordingly
-app.config['MYSQL_DB'] = 'studentdashboard'
+app.config['MYSQL_DB'] = 'results'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
@@ -86,7 +88,7 @@ def login():
                 session['logged_in'] = True
                 session['roll_number'] = roll_number
 
-                flash('Yoe are now logged in', 'success')
+                flash('You are now logged in', 'success')
                 return redirect(url_for('dashboard'))
             else:
                 error = 'Invalid Login'
@@ -116,6 +118,23 @@ def logout():
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
 
+def run_sql_file(filename):
+    '''
+    The function takes a filename and a connection as input
+    and will run the SQL query on the given connection  
+    '''
+    cur = mysql.connection.cursor()
+    start = time.time()
+    
+    file = open(filename, 'r')
+    sql = s = " ".join(file.readlines())
+    print("Start executing: " + filename + " at " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")) + "\n" + sql) 
+    cur.execute(sql) 
+    # mysql.connection.commit() 
+    end = time.time()
+    print("Time elapsed to run the query:")
+    print(str((end - start)*1000) + ' ms')
+
 # Dashboard
 @app.route('/dashboard')
 @is_logged_in
@@ -123,10 +142,15 @@ def dashboard():
     # Create cursor
     cur = mysql.connection.cursor()
     # Get user by roll_number
-    cur.execute("SELECT * FROM data WHERE students__rollno  = '{}'" .format(session['roll_number']))
+    # run_sql_file('data')
+    cur.execute("SELECT cgpi FROM semesters WHERE roll_no  = '{}'" .format(session['roll_number']))
     data = cur.fetchall()
     print(data)
-    return render_template('dashboard.html' , data=data)
+    student_sem_cgpi = []
+    for dict_sem in data:
+        student_sem_cgpi.append(dict_sem['cgpi'])
+    print(student_sem_cgpi)
+    return render_template('dashboard.html' , data=student_sem_cgpi)
 
 if __name__ == '__main__':
     app.secret_key='secret123'
