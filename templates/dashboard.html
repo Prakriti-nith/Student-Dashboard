@@ -2,26 +2,92 @@
 
 {% block body %}
     <h1>Dashboard <small>Welcome {{session.roll_number}}</small></h1>
-<!--     <h2>Working to show some output !</h2> -->
-    <table border="1" cellpadding="5" cellspacing = "5" >
+    <h4>Basic Details:</h4>
+    <!-- <table border="1" cellpadding="5" cellspacing = "5" > -->
+
+        <div id = "student"></div>
+        <script language = "JavaScript">
+            function drawChart() {
+                // Define the chart to be drawn.
+                var data_gc = new google.visualization.DataTable();
+                data_gc.addColumn('string', 'Roll Number');
+                data_gc.addColumn('string', 'Name');
+                data_gc.addColumn('number', 'CGPI');
+                data_gc.addColumn('string', 'Year Rank');
+                data_gc.addColumn('string', 'College Rank');
+                data_gc.addRows([
+                    {{ data[2]|safe }}
+                ]);
+                      
+                // Instantiate and draw the chart.
+                var chart = new google.visualization.Table(document.getElementById('student'));
+                chart.draw(data_gc);
+            }
+            google.charts.setOnLoadCallback(drawChart);
+        </script>
+
+    <br>
+    <h4>Subject wise visualization:</h4>
+
+        <div id = "subjects"></div>
+        <script language = "JavaScript">
+            function drawChart() {
+                // Define the chart to be drawn.
+                var data_gc = new google.visualization.DataTable();
+                data_gc.addColumn('string', 'Subject Name');
+                data_gc.addColumn('string', 'Obtained Credits');
+                data_gc.addColumn('string', 'Total Credits');
+                data_gc.addColumn('number', 'Semester Number');
+                {% for row in data[3] %}
+                    data_gc.addRows([
+                        {{ row|safe }}
+                    ]);
+                {% endfor %}
+                      
+                // Instantiate and draw the chart.
+                var chart = new google.visualization.Table(document.getElementById('subjects'));
+                chart.draw(data_gc);
+            }
+            google.charts.setOnLoadCallback(drawChart);
+        </script>
+
+    <br>
+    <h4>CGPI v/s SGPI visualization:</h4>
+
         <div id="sem"></div>
         <script language = "JavaScript">
         $(document).ready(function() {
             var title = {
-               text: 'CPGI visualization for the student'   
+               text: 'CPGI and SGPI visualization for the student'   
             };
             var series =  [{
-                  name: 'Result',
-                  data: {{ data }}
+                  name: 'CGPI',
+                  data: {{ data[0] }}
+               },
+               {
+                  name: 'SGPI',
+                  data: {{ data[1] }}
                }
             ];
+            var xAxis = {
+               title: {
+                  text: 'Semesters'
+               },
+            }; 
+            var yAxis = {
+               title: {
+                  text: 'CGPI vs SGPI'
+               },
+            }; 
 
             var json = {};
             json.title = title;
+            json.yAxis = yAxis;
+            json.xAxis = xAxis;
             json.series = series;
             
             $('#sem').highcharts(json);
          });
       </script>
-    </table>
+    <!-- </table> -->
 {% endblock %}

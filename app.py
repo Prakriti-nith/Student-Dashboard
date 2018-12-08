@@ -143,14 +143,53 @@ def dashboard():
     cur = mysql.connection.cursor()
     # Get user by roll_number
     # run_sql_file('data')
-    cur.execute("SELECT cgpi FROM semesters WHERE roll_no  = '{}'" .format(session['roll_number']))
+    student_sem_data = []
+    cur.execute("SELECT * FROM semesters WHERE roll_no  = '{}'" .format(session['roll_number']))
     data = cur.fetchall()
     print(data)
     student_sem_cgpi = []
+    student_sem_sgpi = []
     for dict_sem in data:
         student_sem_cgpi.append(dict_sem['cgpi'])
+        student_sem_sgpi.append(dict_sem['sgpi'])
     print(student_sem_cgpi)
-    return render_template('dashboard.html' , data=student_sem_cgpi)
+    print(student_sem_sgpi)
+
+    # student_sem_data[0] = CGPI
+    # student_sem_data[1] = SGPI
+    student_sem_data.append(student_sem_cgpi)
+    student_sem_data.append(student_sem_sgpi)
+
+    cur.execute("SELECT * FROM students WHERE roll_no  = '{}'" .format(session['roll_number']))
+    student_data = cur.fetchall()
+    student_data_list = []
+    student_data_list.append(student_data[0]['roll_no'])
+    student_data_list.append(student_data[0]['name'])
+    student_data_list.append(student_data[0]['cgpi'])
+    student_data_list.append(student_data[0]['year_rank'])
+    student_data_list.append(student_data[0]['college_rank'])
+    print(student_data)
+
+    # student_sem_data[2] = student details
+    student_sem_data.append(student_data_list)
+
+    cur.execute("SELECT * FROM subjects WHERE roll_no  = '{}'" .format(session['roll_number']))
+    student_subjects = cur.fetchall()
+    student_subjects_list = []
+    for i in student_subjects:
+        stu_sub_list = []
+        stu_sub_list.append(i['subject_name'])
+        stu_sub_list.append(i['ObtainCR'])
+        stu_sub_list.append(i['TotalCR'])
+        stu_sub_list.append(int(i['semester_no']) % 10)
+        student_subjects_list.append(stu_sub_list)
+        # print(i)
+    print(student_subjects_list)
+
+    # student_sem_data[3] = subject wise details of student
+    student_sem_data.append(student_subjects_list)
+
+    return render_template('dashboard.html' , data=student_sem_data)
 
 if __name__ == '__main__':
     app.secret_key='secret123'
