@@ -6,13 +6,17 @@ from functools import wraps
 import time
 import datetime
 
+#forecasting 
+import numpy as np
+from statsmodels.tsa.arima_model import ARIMA
+
 app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'gupta@123'
+app.config['MYSQL_PASSWORD'] = 'root'
 #Change Password Accordingly
-app.config['MYSQL_DB'] = 'results'
+app.config['MYSQL_DB'] = 'users'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
@@ -143,7 +147,7 @@ def dashboard():
     cur = mysql.connection.cursor()
     # Get user by roll_number
     # run_sql_file('data')
-    cur.execute("SELECT cgpi FROM semesters WHERE roll_no  = '{}'" .format(session['roll_number']))
+    cur.execute("SELECT cgpi FROM semester WHERE roll_number  = '{}'" .format(session['roll_number']))
     data = cur.fetchall()
     print(data)
     student_sem_cgpi = []
@@ -152,6 +156,35 @@ def dashboard():
     print(student_sem_cgpi)
     return render_template('dashboard.html' , data=student_sem_cgpi)
 
+# Forecast
+@app.route('/forecast')
+@is_logged_in
+def forecast():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT cgpi FROM semester WHERE roll_number  = '{}'" .format(session['roll_number']))
+    data = cur.fetchall()
+    #print(list(data))
+    lst = []
+    count = 0 
+    for i in list(data):
+        count=count+1
+        lst.append(i['cgpi'])
+    #print(lst)
+    lnRes = np.log(lst)
+    #result_matrix=lnRes.asmatrix()
+    model = ARIMA(lnRes, order=(0,0,0))
+    model_fit = model.fit(disp=0)
+    rows,coloums=count,1
+    predictions=model_fit.predict(rows, rows+1)
+    predictionsadjusted=np.exp(predictions)
+    #print(predictionsadjusted)
+    #print(type(data))
+    student_sem_cgpi = []
+    for dict_sem in data:
+        student_sem_cgpi.append(dict_sem['cgpi'])
+    student_sem_cgpi.append(float("{0:.2f}".format(predictionsadjusted[0])))
+    return render_template('dashboard.html' , data=student_sem_cgpi )
+
 if __name__ == '__main__':
     app.secret_key='secret123'
-app.run(debug=True)
+    app.run(debug=True)
