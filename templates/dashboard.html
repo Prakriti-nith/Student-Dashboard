@@ -43,10 +43,13 @@
                         {{ row|safe }}
                     ]);
                 {% endfor %}
+                options = {
+                    pageSize: 20
+                }
                       
                 // Instantiate and draw the chart.
                 var chart = new google.visualization.Table(document.getElementById('subjects'));
-                chart.draw(data_gc);
+                chart.draw(data_gc, options);
             }
             google.charts.setOnLoadCallback(drawChart);
         </script>
