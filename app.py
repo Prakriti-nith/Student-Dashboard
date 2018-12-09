@@ -6,13 +6,17 @@ from functools import wraps
 import time
 import datetime
 
+#forecasting 
+import numpy as np
+from statsmodels.tsa.arima_model import ARIMA
+
 app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'gupta@123'
+app.config['MYSQL_PASSWORD'] = 'root'
 #Change Password Accordingly
-app.config['MYSQL_DB'] = 'results'
+app.config['MYSQL_DB'] = 'result'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
@@ -146,14 +150,14 @@ def dashboard():
     student_sem_data = []
     cur.execute("SELECT * FROM semesters WHERE roll_no  = '{}'" .format(session['roll_number']))
     data = cur.fetchall()
-    print(data)
+    #print(data)
     student_sem_cgpi = []
     student_sem_sgpi = []
     for dict_sem in data:
         student_sem_cgpi.append(dict_sem['cgpi'])
         student_sem_sgpi.append(dict_sem['sgpi'])
-    print(student_sem_cgpi)
-    print(student_sem_sgpi)
+    #print(student_sem_cgpi)
+    #print(student_sem_sgpi)
 
     # student_sem_data[0] = CGPI
     # student_sem_data[1] = SGPI
@@ -168,7 +172,77 @@ def dashboard():
     student_data_list.append(student_data[0]['cgpi'])
     student_data_list.append(student_data[0]['year_rank'])
     student_data_list.append(student_data[0]['college_rank'])
-    print(student_data)
+    #print(student_data)
+
+    # student_sem_data[2] = student details
+    student_sem_data.append(student_data_list)
+    cur.execute("SELECT * FROM subjects WHERE roll_no  = '{}'" .format(session['roll_number']))
+    student_subjects = cur.fetchall()
+    student_subjects_list = []
+    for i in student_subjects:
+        stu_sub_list = []
+        stu_sub_list.append(i['subject_name'])
+        stu_sub_list.append(i['ObtainCR'])
+        stu_sub_list.append(i['TotalCR'])
+        stu_sub_list.append(int(i['semester_no'][-1]) % 10)
+        student_subjects_list.append(stu_sub_list)
+        # print(i)
+    #print(student_subjects_list)
+
+    # student_sem_data[3] = subject wise details of student
+    student_sem_data.append(student_subjects_list)
+
+    return render_template('dashboard.html' , data=student_sem_data)
+
+
+# Dashboard
+@app.route('/forecast')
+@is_logged_in
+def forecast():
+    # Create cursor
+    cur = mysql.connection.cursor()
+    # Get user by roll_number
+    # run_sql_file('data')
+    student_sem_data = []
+    cur.execute("SELECT * FROM semesters WHERE roll_no  = '{}'" .format(session['roll_number']))
+    data = cur.fetchall()
+    #print(data)
+    student_sem_cgpi = []
+    student_sem_sgpi = []
+    for dict_sem in data:
+        student_sem_cgpi.append(dict_sem['cgpi'])
+        student_sem_sgpi.append(dict_sem['sgpi'])
+    print(student_sem_cgpi)
+    print(student_sem_sgpi)
+
+    lst = student_sem_sgpi
+    count = len(student_sem_sgpi)
+    #print(lst)
+    lnRes = np.log(lst)
+    #result_matrix=lnRes.asmatrix()
+    model = ARIMA(lnRes, order=(0,0,0))
+    model_fit = model.fit(disp=0)
+    rows,coloums=count,1
+    predictions=model_fit.predict(rows, rows+1)
+    predictionsadjusted=np.exp(predictions)
+    print(predictionsadjusted)
+    student_sem_sgpi.append(float("{0:.2f}".format(predictionsadjusted[0])))
+    # student_sem_data[0] = CGPI
+    # student_sem_data[1] = SGPI
+
+
+    student_sem_data.append(student_sem_cgpi)
+    student_sem_data.append(student_sem_sgpi)
+
+    cur.execute("SELECT * FROM students WHERE roll_no  = '{}'" .format(session['roll_number']))
+    student_data = cur.fetchall()
+    student_data_list = []
+    student_data_list.append(student_data[0]['roll_no'])
+    student_data_list.append(student_data[0]['name'])
+    student_data_list.append(student_data[0]['cgpi'])
+    student_data_list.append(student_data[0]['year_rank'])
+    student_data_list.append(student_data[0]['college_rank'])
+    #print(student_data)
 
     # student_sem_data[2] = student details
     student_sem_data.append(student_data_list)
@@ -184,12 +258,13 @@ def dashboard():
         stu_sub_list.append(int(i['semester_no'][-1]) % 10)
         student_subjects_list.append(stu_sub_list)
         # print(i)
-    print(student_subjects_list)
+    #print(student_subjects_list)
 
     # student_sem_data[3] = subject wise details of student
-    student_sem_data.append(student_subjects_list)
+    #student_sem_data.append(student_subjects_list)
 
-    return render_template('dashboard.html' , data=student_sem_data)
+    return render_template('forecast.html' , data=student_sem_data)
+
 
 if __name__ == '__main__':
     app.secret_key='secret123'
