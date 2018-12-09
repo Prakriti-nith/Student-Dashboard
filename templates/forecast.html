@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Dashboard <small>Welcome {{session.roll_number}}</small></h1>
+    <h4>Basic Details:</h4>
+    <!-- <table border="1" cellpadding="5" cellspacing = "5" > -->
+
+        <div id = "student"></div>
+        <script language = "JavaScript">
+            function drawChart() {
+                // Define the chart to be drawn.
+                var data_gc = new google.visualization.DataTable();
+                data_gc.addColumn('string', 'Roll Number');
+                data_gc.addColumn('string', 'Name');
+                data_gc.addColumn('number', 'CGPI');
+                data_gc.addColumn('string', 'Year Rank');
+                data_gc.addColumn('string', 'College Rank');
+                data_gc.addRows([
+                    {{ data[2]|safe }}
+                ]);
+                      
+                // Instantiate and draw the chart.
+                var chart = new google.visualization.Table(document.getElementById('student'));
+                chart.draw(data_gc);
+            }
+            google.charts.setOnLoadCallback(drawChart);
+        </script>
+
+    <br>
+    
+    <h4>Forecasted SGPI of Next Semester:</h4>
+
+        <div id="sem"></div>
+        <script language = "JavaScript">
+        $(document).ready(function() {
+            var title = {
+               text: 'SGPI '   
+            };
+            var series =  [{
+                  name: 'SGPI',
+                  data: {{ data[1] }}
+               }];
+            var xAxis = {
+               title: {
+                  text: 'Semesters'
+               },
+            }; 
+            var yAxis = {
+               title: {
+                  text: 'CGPI vs SGPI'
+               },
+            }; 
+
+            var json = {};
+            json.title = title;
+            json.yAxis = yAxis;
+            json.xAxis = xAxis;
+            json.series = series;
+            
+            $('#sem').highcharts(json);
+         });
+      </script>
+    <!-- </table> -->
+{% endblock %}
