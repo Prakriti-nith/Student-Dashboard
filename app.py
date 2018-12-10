@@ -24,7 +24,51 @@ mysql = MySQL(app)
 # Index
 @app.route('/')
 def index():
-    return render_template('home.html')
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT COUNT(roll_no) FROM students ")
+    data = cur.fetchall()
+    temp = data[0]
+    #number of entries in Students Tables
+    countall = float(temp['COUNT(roll_no)'])
+    to_pass = []
+    
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi <= 4")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 4 AND cgpi <=6 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 6 AND cgpi <= 7 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 7 AND cgpi <= 8 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 8 AND cgpi <= 9 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 9 AND cgpi <= 10 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+    # print(to_pass)
+    return render_template('home.html' , data = to_pass)
 
 # Register form class
 class RegisterForm(Form):
@@ -212,24 +256,45 @@ def forecast():
     for dict_sem in data:
         student_sem_cgpi.append(dict_sem['cgpi'])
         student_sem_sgpi.append(dict_sem['sgpi'])
-    print(student_sem_cgpi)
-    print(student_sem_sgpi)
+    # print(student_sem_cgpi)
+    # print(student_sem_sgpi)
 
-    lst = student_sem_sgpi
-    count = len(student_sem_sgpi)
-    #print(lst)
-    lnRes = np.log(lst)
-    #result_matrix=lnRes.asmatrix()
-    model = ARIMA(lnRes, order=(0,0,0))
-    model_fit = model.fit(disp=0)
-    rows,coloums=count,1
-    predictions=model_fit.predict(rows, rows+1)
-    predictionsadjusted=np.exp(predictions)
-    print(predictionsadjusted)
-    student_sem_sgpi.append(float("{0:.2f}".format(predictionsadjusted[0])))
+    if len(session['roll_number'])==10 or len(session['roll_number'])==5:
+        if len(student_sem_sgpi)<8:
+            lst = student_sem_sgpi
+            count = len(student_sem_sgpi)
+            # print(session['roll_number'])
+            #print(lst)
+            lnRes = np.log(lst)
+            #result_matrix=lnRes.asmatrix()
+            model = ARIMA(lnRes, order=(0,0,0))
+            model_fit = model.fit(disp=0)
+            rows,coloums=count,1
+            predictions=model_fit.predict(rows, rows+1)
+            predictionsadjusted=np.exp(predictions)
+            print(predictionsadjusted)
+            student_sem_sgpi.append(float("{0:.2f}".format(predictionsadjusted[0])))
+        else:
+            pass
+    else:
+        if len(student_sem_sgpi)<10:
+            lst = student_sem_sgpi
+            count = len(student_sem_sgpi)
+            # print(session['roll_number'])
+            #print(lst)
+            lnRes = np.log(lst)
+            #result_matrix=lnRes.asmatrix()
+            model = ARIMA(lnRes, order=(0,0,0))
+            model_fit = model.fit(disp=0)
+            rows,coloums=count,1
+            predictions=model_fit.predict(rows, rows+1)
+            predictionsadjusted=np.exp(predictions)
+            print(predictionsadjusted)
+            student_sem_sgpi.append(float("{0:.2f}".format(predictionsadjusted[0])))
+        else:
+            pass
     # student_sem_data[0] = CGPI
     # student_sem_data[1] = SGPI
-
 
     student_sem_data.append(student_sem_cgpi)
     student_sem_data.append(student_sem_sgpi)
