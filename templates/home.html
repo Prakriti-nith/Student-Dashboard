@@ -3,12 +3,60 @@
 {% block body %}
     <style>
         div.jumbotron.text-center {
-            margin-top: 50px;
+            margin-top: 20px;
         }
     </style>
     <div class="jumbotron text-center">
         <h1></h1>
         <h1>Welcome to the NITH dashboard!</h1>
         <p class="lead">This application is built to simplify the life of a student at NITH</p>
-    </div>
+    <br>
+    <br>
+    <!-- changes I made -->
+    <div id="contain"></div>
+        <script language = "JavaScript">
+            $(document).ready(function() {
+            // Original data
+            var data = [  
+               {  
+                  "name":"cgpi < 4",
+                  "y": {{ data[0] }}
+               },
+               {
+                    "name" : "cgpi 4 - 6",
+                    "y" : {{ data[1] }}
+               },
+               {  
+                  "name":"cgpi 6 - 7",
+                  "y": {{ data[2] }}
+               },
+               {
+                    "name" : "cgpi 7 - 8",
+                    "y" : {{ data[3] }}
+               },
+               {
+                    "name" : "cgpi 8 - 9",
+                    "y" : {{ data[4] }}
+               },
+               {
+                    "name" : "cgpi 9 - 10",
+                    "y" : {{ data[5] }}
+               }
+            ];
+
+            var chart = new Highcharts.Chart({
+                chart: {
+                    renderTo: 'contain',
+                    type: 'pie'
+                },
+                series: [{
+                    data: data
+                }],
+                title: {
+                    text: 'Academic results, summarized'
+                }
+            });
+            });
+      </script>
+      </div>
 {% endblock %}

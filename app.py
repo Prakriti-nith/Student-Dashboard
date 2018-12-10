@@ -24,7 +24,51 @@ mysql = MySQL(app)
 # Index
 @app.route('/')
 def index():
-    return render_template('home.html')
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT COUNT(roll_no) FROM students ")
+    data = cur.fetchall()
+    temp = data[0]
+    #number of entries in Students Tables
+    countall = float(temp['COUNT(roll_no)'])
+    to_pass = []
+    
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi <= 4")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 4 AND cgpi <=6 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 6 AND cgpi <= 7 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 7 AND cgpi <= 8 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 8 AND cgpi <= 9 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+
+    cur.execute("SELECT COUNT(roll_no) FROM students where cgpi > 9 AND cgpi <= 10 ")
+    data = cur.fetchall()
+    temp = data[0]
+    count = float(temp['COUNT(roll_no)'])
+    to_pass.append(float("{0:.2f}".format((count/countall)*100)))
+    # print(to_pass)
+    return render_template('home.html' , data = to_pass)
 
 # Register form class
 class RegisterForm(Form):
