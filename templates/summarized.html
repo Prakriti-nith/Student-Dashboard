@@ -1,17 +1,52 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <style>
-        div.jumbotron.text-center {
-            margin-top: 30px;
-        }
-    </style>
-    <div class="jumbotron text-center">
     <br>
     <!-- changes I made -->
-    <div id="contain"></div>
-        <script language = "JavaScript">
-          
-      </script>
-      </div>
+    <div id="chart0"></div>
+    <div id="chart1"></div>
+    <div id="chart2"></div>
+    <div id="chart3"></div>
+    <div id="chart4"></div>
+    <div id="chart5"></div>
+    <div id="chart6"></div>
+    <div id="chart7"></div>
+    <script language = "JavaScript">
+        {% for sem in data %}
+
+            $(document).ready(function() {
+                var chart = {
+                    type: 'line'
+                };
+                var title = {
+                   text: 'Semester ' + {{  sem[2] + 1 }} + ' results - Subject wise'   
+                };
+                var series =  [{
+                      name: 'Grades',
+                      data: {{ sem[1] }}
+                   }
+                ];
+                var xAxis = {
+                   title: {
+                      text: 'Subjects'
+                   },
+                   categories: {{ sem[0]|safe }}
+                }; 
+                var yAxis = {
+                   title: {
+                      text: 'Semester ' + {{  sem[2] + 1 }} + ' grades'
+                   },
+                }; 
+
+                var json = {};
+                json.chart = chart;
+                json.title = title;
+                json.yAxis = yAxis;
+                json.xAxis = xAxis;
+                json.series = series;
+                
+                $('#chart' + {{  sem[2] }}).highcharts(json);
+            });
+        {% endfor %}
+    </script>
 {% endblock %}

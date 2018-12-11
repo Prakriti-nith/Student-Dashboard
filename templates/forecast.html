@@ -35,6 +35,9 @@
         <div id="sem"></div>
         <script language = "JavaScript">
         $(document).ready(function() {
+            var chart = {
+                type: 'line'
+            };
             var title = {
                text: 'SGPI '   
             };
@@ -54,6 +57,7 @@
             }; 
 
             var json = {};
+            json.chart = chart;
             json.title = title;
             json.yAxis = yAxis;
             json.xAxis = xAxis;
