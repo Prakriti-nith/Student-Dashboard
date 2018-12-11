@@ -20,10 +20,16 @@
     <ul class="navbar-nav mr-auto">
       {% if session.logged_in %}
         <li class="nav-item active">
-          <a class="nav-link" href="/dashboard">Dashboard <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/dashboard">Dashboard <span class="sr-only">(current)</span>
+          </a>
         </li>
         <li class="nav-item active">
-          <a class="nav-link" href="/forecast">Forecasted results<span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/forecast">Forecast results<span class="sr-only">(current)
+          </span></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/summarized">Summarized results<span class="sr-only">(current)
+          </span></a>
         </li>
         <li class="nav-item active">
           <a class="nav-link" href="/logout">Logout <span class="sr-only">(current)</span></a>
