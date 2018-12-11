@@ -14,9 +14,9 @@ app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'gupta@123'
 #Change Password Accordingly
-app.config['MYSQL_DB'] = 'result'
+app.config['MYSQL_DB'] = 'results'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
@@ -284,7 +284,7 @@ def forecast():
             #print(lst)
             lnRes = np.log(lst)
             #result_matrix=lnRes.asmatrix()
-            model = ARIMA(lnRes, order=(0,0,0))
+            model = ARIMA(lnRes, order=(0,0,1))
             model_fit = model.fit(disp=0)
             rows,coloums=count,1
             predictions=model_fit.predict(rows, rows+1)
@@ -335,30 +335,48 @@ def forecast():
 @is_logged_in
 def summarized():
     cur = mysql.connection.cursor()
-    cur.execute("select subject_name, ObtainCR , TotalCR from subjects where roll_no = '{}'" .format(session['roll_number']))
+    cur.execute("select semester_no, subject_name, ObtainCR , TotalCR from subjects where roll_no = '{}' order by semester_no" .format(session['roll_number']))
     data = cur.fetchall()
-    # print(type(data))
+    # print(data)
+    cur.execute("select count(distinct semester_no) as cnt from subjects where roll_no = '{}'" .format(session['roll_number']))
+    semester_cnt = cur.fetchall()
+    # print(semester_cnt)
     # print(type(data[0]))
-    to_pass = []
-    dic = {} ;
+    sem_cnt = semester_cnt[0]['cnt']
+    # print(sem_cnt)
+    # to_pass = []
+    to_pass = [[] for x in range(0,sem_cnt)]
+    subjects = [[] for x in range(0,sem_cnt)]
+    grades = [[] for x in range(0,sem_cnt)]
+
+    print(to_pass)
     for i in data:
-        temp = ();
-        dic['subject_name'] = i['subject_name']
-        dic['Grades'] = (int(i['ObtainCR'])*10)/int(i['TotalCR'])
-        to_pass.append(dic.copy())
+        # dic['subject_name'] = i['subject_name']
+        # dic['Grades'] = (int(i['ObtainCR'])*10)/int(i['TotalCR'])
+        # dic['semester_no'] = int(i['semester_no'][-1])
+        semester_no = int(i['semester_no'][-1]) - 1
+        subjects[semester_no].append(i['subject_name'])
+        grades[semester_no].append((int(i['ObtainCR'])*10)/int(i['TotalCR']))
+    
+    for i in range(0,sem_cnt):
+        to_pass[i].append(subjects[i])
+        to_pass[i].append(grades[i])
+        to_pass[i].append(i)
+
     print(to_pass)
     # print(countall)
     
-    if len(session['roll_number']) == 10:
-        #IIIT una
-        year = "20" + str(session['roll_number'])[5:7]
-    else:
-        #Dual Degree or B.Tech
-        year = "20" + str(session['roll_number'])[0:2]
+    # if len(session['roll_number']) == 10:
+    #     #IIIT una
+    #     year = "20" + str(session['roll_number'])[5:7]
+    # else:
+    #     #Dual Degree or B.Tech
+    #     year = "20" + str(session['roll_number'])[0:2]
     #print(year)
-    return render_template('summarized.html' , data=to_pass , year = year)
+    return render_template('summarized.html', data=to_pass)
 
 
 if __name__ == '__main__':
     app.secret_key='secret123'
-    app.run(debug=True)
+app.run(debug=True)
+

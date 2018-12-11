@@ -60,16 +60,21 @@
         <div id="sem"></div>
         <script language = "JavaScript">
         $(document).ready(function() {
+            var chart = {
+                type: 'column'
+            };
             var title = {
                text: 'CPGI vs SGPI'   
             };
             var series =  [{
                   name: 'CGPI',
-                  data: {{ data[0] }}
+                  data: {{ data[0] }},
+                  // type: 'line'
                },
                {
                   name: 'SGPI',
-                  data: {{ data[1] }}
+                  data: {{ data[1] }},
+                  // type: 'scatter'
                }
             ];
             var xAxis = {
@@ -84,6 +89,7 @@
             }; 
 
             var json = {};
+            json.chart = chart;
             json.title = title;
             json.yAxis = yAxis;
             json.xAxis = xAxis;
