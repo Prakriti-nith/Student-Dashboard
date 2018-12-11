@@ -331,6 +331,34 @@ def forecast():
     return render_template('forecast.html' , data=student_sem_data)
 
 
+@app.route('/summarized')
+@is_logged_in
+def summarized():
+    cur = mysql.connection.cursor()
+    cur.execute("select subject_name, ObtainCR , TotalCR from subjects where roll_no = '{}'" .format(session['roll_number']))
+    data = cur.fetchall()
+    # print(type(data))
+    # print(type(data[0]))
+    to_pass = []
+    dic = {} ;
+    for i in data:
+        temp = ();
+        dic['subject_name'] = i['subject_name']
+        dic['Grades'] = (int(i['ObtainCR'])*10)/int(i['TotalCR'])
+        to_pass.append(dic.copy())
+    print(to_pass)
+    # print(countall)
+    
+    if len(session['roll_number']) == 10:
+        #IIIT una
+        year = "20" + str(session['roll_number'])[5:7]
+    else:
+        #Dual Degree or B.Tech
+        year = "20" + str(session['roll_number'])[0:2]
+    #print(year)
+    return render_template('summarized.html' , data=to_pass , year = year)
+
+
 if __name__ == '__main__':
     app.secret_key='secret123'
 app.run(debug=True)
