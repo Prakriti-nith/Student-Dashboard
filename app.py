@@ -14,9 +14,9 @@ app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'gupta@123'
+app.config['MYSQL_PASSWORD'] = 'root'
 #Change Password Accordingly
-app.config['MYSQL_DB'] = 'results'
+app.config['MYSQL_DB'] = 'result'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
@@ -267,7 +267,7 @@ def forecast():
             #print(lst)
             lnRes = np.log(lst)
             #result_matrix=lnRes.asmatrix()
-            model = ARIMA(lnRes, order=(0,0,1))
+            model = ARIMA(lnRes, order=(0,0,0))
             model_fit = model.fit(disp=0)
             rows,coloums=count,1
             predictions=model_fit.predict(rows, rows+1)
@@ -284,7 +284,7 @@ def forecast():
             #print(lst)
             lnRes = np.log(lst)
             #result_matrix=lnRes.asmatrix()
-            model = ARIMA(lnRes, order=(0,0,1))
+            model = ARIMA(lnRes, order=(0,0,0))
             model_fit = model.fit(disp=0)
             rows,coloums=count,1
             predictions=model_fit.predict(rows, rows+1)
