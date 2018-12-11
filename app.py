@@ -267,7 +267,7 @@ def forecast():
             #print(lst)
             lnRes = np.log(lst)
             #result_matrix=lnRes.asmatrix()
-            model = ARIMA(lnRes, order=(0,0,0))
+            model = ARIMA(lnRes, order=(0,0,1))
             model_fit = model.fit(disp=0)
             rows,coloums=count,1
             predictions=model_fit.predict(rows, rows+1)
@@ -361,4 +361,4 @@ def summarized():
 
 if __name__ == '__main__':
     app.secret_key='secret123'
-app.run(debug=True)
+    app.run(debug=True)
