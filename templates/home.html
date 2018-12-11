@@ -10,9 +10,9 @@
         <h1></h1>
         <h1>Welcome to the NITH dashboard!</h1>
         <p class="lead">This application is built to simplify the life of a student at NITH</p>
-    <br>
-    <br>
+    </div>
     <!-- changes I made -->
+    <br>
     <div id="contain"></div>
         <script language = "JavaScript">
             $(document).ready(function() {
@@ -50,13 +50,26 @@
                     type: 'pie'
                 },
                 series: [{
-                    data: data
+                  name: 'CGPI',
+                  data: data
                 }],
                 title: {
                     text: 'Academic results, summarized'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
+                },
+                plotOptions: {
+                  pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                      enabled: false
+                    },
+                  showInLegend: true
+                  }
                 }
             });
             });
       </script>
-      </div>
 {% endblock %}
