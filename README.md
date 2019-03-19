@@ -3,4 +3,3 @@ A web portal to visualize the results of a student at NITH in an interactive way
 
 
 ## Data Shown
-![Diagram](https://github.com/iBvishal/Student-Dashboard/blob/master/Images/DashboardAfterLogin.png)
