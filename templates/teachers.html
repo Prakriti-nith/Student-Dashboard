@@ -2,4 +2,24 @@
 
 {% block body %}
     <h1>Plagiarism checker for assignments</h1>
+    <!-- <br><button type="button" onclick="alert('Hello world!')">Assignment 1</button>
+    <br><br><button type="button" onclick="alert('Hello world!')">Assignment 2</button> -->
+    <br>
+    <!-- <form action = "http://localhost:5000/uploader" method = "POST" 
+      enctype = "multipart/form-data">
+      <input type = "file" name = "file" />
+      <input type = "submit"/>
+    </form>
+    <br>
+    <br>
+    <form action = "http://localhost:5000/uploader" method = "POST" 
+      enctype = "multipart/form-data">
+      <input type = "file" name = "file" />
+      <input type = "submit"/>
+    </form> -->
+    <form method="POST" enctype="multipart/form-data" action="/upload">
+      <input type="file" name="file[]" multiple="">
+      <input type="submit" value="Check Plagiarism">
+    </form>
+
 {% endblock %}

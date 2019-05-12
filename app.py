@@ -1,16 +1,24 @@
 from flask import Flask, request, render_template, flash, redirect, url_for, session, logging
+import flask
+import os
+from werkzeug.utils import secure_filename
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
 import time
 import datetime
+from difflib import SequenceMatcher
 
 #forecasting 
 import numpy as np
 from statsmodels.tsa.arima_model import ARIMA
 
 app = Flask(__name__)
+
+ALLOWED_EXTENSIONS = set(['txt'])
+app.config['UPLOAD_FOLDER'] = "."
+
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -83,7 +91,29 @@ class RegisterForm(Form):
 
 @app.route('/teachers', methods=['GET', 'POST'])
 def teachers():
-    return render_template('teachers.html')    
+    return render_template('teachers.html')  
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS 
+
+@app.route("/upload", methods=["POST"])
+def upload():
+    uploaded_files = flask.request.files.getlist("file[]")
+    cnt = 0
+    for file in uploaded_files:
+        if file and allowed_file(file.filename):
+            cnt = cnt+1
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'ass'+str(cnt)+'.txt'))
+            print(filename)
+    with open('ass1.txt') as file_1,open('ass2.txt') as file_2:
+        file1_data = file_1.read()
+        file2_data = file_2.read()
+        similarity_ratio = SequenceMatcher(None, file1_data, file2_data).ratio()
+        print(similarity_ratio*100)  #plagiarism detected
+        flash(str(similarity_ratio*100) + " percent plagiarism detected.")
+    return render_template('teachers.html')  
 
 # USer Register
 @app.route('/register', methods=['GET', 'POST'])
