@@ -81,6 +81,10 @@ class RegisterForm(Form):
     ])
     confirm = PasswordField('Confirm Password')
 
+@app.route('/teachers', methods=['GET', 'POST'])
+def teachers():
+    return render_template('teachers.html')    
+
 # USer Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
