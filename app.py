@@ -112,8 +112,8 @@ def upload():
         file2_data = file_2.read()
         similarity_ratio = SequenceMatcher(None, file1_data, file2_data).ratio()
         print(similarity_ratio*100)  #plagiarism detected
-        flash(str(similarity_ratio*100) + " percent plagiarism detected.")
-    return render_template('teachers.html')  
+        # flash(str(similarity_ratio*100) + " percent plagiarism detected.")
+    return render_template('teachers.html', data=similarity_ratio)  
 
 # USer Register
 @app.route('/register', methods=['GET', 'POST'])
