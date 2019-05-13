@@ -152,7 +152,9 @@ def upload():
         print('------------------------------------------------')
         print(result)
         # print(type(result))
-    return render_template('teachers.html', data=1) 
+    if os.path.exists(os.getcwd()+"/testfile.txt"):
+        os.remove(os.getcwd()+"/testfile.txt")
+    return render_template('teachers.html', data=results) 
 
 # USer Register
 @app.route('/register', methods=['GET', 'POST'])
