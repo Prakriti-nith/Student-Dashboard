@@ -111,14 +111,12 @@ def allowed_file(filename):
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    # uploaded_files = flask.request.files.getlist("file[]")
-    # cnt = 0
-    # for file in uploaded_files:
-    #     if file and allowed_file(file.filename):
-    #         cnt = cnt+1
-    #         filename = secure_filename(file.filename)
-    #         file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'ass'+str(cnt)+'.txt'))
-    #         print(filename)
+    uploaded_files = flask.request.files.getlist("file[]")
+    for file in uploaded_files:
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'testfile.txt'))
+            print(filename)
     # with open('ass1.txt') as file_1,open('ass2.txt') as file_2:
     #     file1_data = file_1.read()
     #     file2_data = file_2.read()
@@ -126,15 +124,16 @@ def upload():
     #     print(similarity_ratio*100)  #plagiarism detected
     #     # flash(str(similarity_ratio*100) + " percent plagiarism detected.")
     # return render_template('teachers.html', data=similarity_ratio)  
+
     cloud = CopyleaksCloud(Product.Education, 'bhardwaj.vishalnit@outlook.com', 'C762D08D-6622-4634-BE1F-B9FEA8A9F098')
     print("You've got %s Copyleaks %s API credits" % (cloud.getCredits(), cloud.getProduct())) #get credit balance
     options = ProcessOptions()
-    options.setSandboxMode(True)
-    print("Submitting a scan request...")
+    # options.setSandboxMode(True)
 
-    process = cloud.createByUrl('https://copyleaks.com', options)
+    print("Submitting a scan request...")
+    process = cloud.createByFile(os.getcwd()+'/testfile.txt', options)
+    # process = cloud.createByUrl('https://copyleaks.com', options)
     # process = cloud.createByOcr('ocr-example.jpg', eOcrLanguage.English, options)
-    # process = cloud.createByFile('test.txt', options)
     # process = cloud.createByText("Lorem ipsum torquent placerat quisque rutrum tempor lacinia aliquam habitant ligula arcu faucibus gravida, aenean orci lacinia mattis purus consectetur conubia mauris amet nibh consequat turpis dictumst hac ut nullam sodales nunc aenean pharetra, aenean ut sagittis leo massa nisi duis nullam iaculis, nulla ultrices consectetur facilisis curabitur scelerisque quisque primis elit sagittis dictum felis ornare class porta rhoncus lobortis donec praesent curabitur cubilia nec eleifend fringilla fusce vivamus elementum semper nisi conubia dolor, eros habitant nisl suspendisse venenatis interdum nulla interdum, libero urna maecenas potenti nam habitant aliquam donec class sem hendrerit tempus.")
     # processes, errors = cloud.createByFiles(['path/to/file1', 'path/to/file2'], options)
 
@@ -152,6 +151,7 @@ def upload():
         print('')
         print('------------------------------------------------')
         print(result)
+        # print(type(result))
     return render_template('teachers.html', data=1) 
 
 # USer Register
