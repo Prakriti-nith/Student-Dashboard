@@ -125,7 +125,7 @@ def upload():
     #     # flash(str(similarity_ratio*100) + " percent plagiarism detected.")
     # return render_template('teachers.html', data=similarity_ratio)  
 
-    cloud = CopyleaksCloud(Product.Education, 'bhardwaj.vishalnit@outlook.com', 'C762D08D-6622-4634-BE1F-B9FEA8A9F098')
+    cloud = CopyleaksCloud(Product.Education, 'vishalbhardwaj998@gmail.com', '06BBEC2A-F27A-45DA-86AB-E515838ED1EF')
     print("You've got %s Copyleaks %s API credits" % (cloud.getCredits(), cloud.getProduct())) #get credit balance
     options = ProcessOptions()
     # options.setSandboxMode(True)

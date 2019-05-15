@@ -21,9 +21,18 @@
       <input type="file" name="file[]" multiple="">
       <input type="submit" value="Check Plagiarism">
     </form>
-    {% if data %}
-      <br>
-      <h5> {{ data }} percent plagiarism found. </h5>
-    {% endif %}
+    <br>
+    <ul>
+      {% for result in data %}
+          <hr>
+          {% if result.URL != None %}
+            <li>{{ result }}</li><br>
+          {% endif %}
+      {% endfor %}
+      <hr>
+    </ul>
+      <!-- <br>
+      <h5> {{ data }} percent plagiarism found. </h5> -->
+    
 
 {% endblock %}
