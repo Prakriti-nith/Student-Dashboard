@@ -34,7 +34,7 @@ app.config['UPLOAD_FOLDER'] = "."
 # Config MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'
+# app.config['MYSQL_PASSWORD'] = 'root'
 #Change Password Accordingly
 app.config['MYSQL_DB'] = 'result'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
@@ -112,49 +112,52 @@ def allowed_file(filename):
 @app.route("/upload", methods=["POST"])
 def upload():
     uploaded_files = flask.request.files.getlist("file[]")
+    print(uploaded_files)
     for file in uploaded_files:
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'testfile.txt'))
             print(filename)
-    # with open('ass1.txt') as file_1,open('ass2.txt') as file_2:
-    #     file1_data = file_1.read()
-    #     file2_data = file_2.read()
-    #     similarity_ratio = SequenceMatcher(None, file1_data, file2_data).ratio()
-    #     print(similarity_ratio*100)  #plagiarism detected
-    #     # flash(str(similarity_ratio*100) + " percent plagiarism detected.")
-    # return render_template('teachers.html', data=similarity_ratio)  
+    if len(uploaded_files) == 2:
+        with open('ass1.txt') as file_1,open('ass2.txt') as file_2:
+            file1_data = file_1.read()
+            file2_data = file_2.read()
+            similarity_ratio = SequenceMatcher(None, file1_data, file2_data).ratio()
+            print(similarity_ratio*100)  #plagiarism detected
+            # flash(str(similarity_ratio*100) + " percent plagiarism detected.")
+            return render_template('teachers.html', data=similarity_ratio)
 
-    cloud = CopyleaksCloud(Product.Education, 'vishalbhardwaj998@gmail.com', '06BBEC2A-F27A-45DA-86AB-E515838ED1EF')
-    print("You've got %s Copyleaks %s API credits" % (cloud.getCredits(), cloud.getProduct())) #get credit balance
-    options = ProcessOptions()
-    # options.setSandboxMode(True)
+    else:
+        cloud = CopyleaksCloud(Product.Education, 'vishalbhardwaj998@gmail.com', '06BBEC2A-F27A-45DA-86AB-E515838ED1EF')
+        print("You've got %s Copyleaks %s API credits" % (cloud.getCredits(), cloud.getProduct())) #get credit balance
+        options = ProcessOptions()
+        # options.setSandboxMode(True)
 
-    print("Submitting a scan request...")
-    process = cloud.createByFile(os.getcwd()+'/testfile.txt', options)
-    # process = cloud.createByUrl('https://copyleaks.com', options)
-    # process = cloud.createByOcr('ocr-example.jpg', eOcrLanguage.English, options)
-    # process = cloud.createByText("Lorem ipsum torquent placerat quisque rutrum tempor lacinia aliquam habitant ligula arcu faucibus gravida, aenean orci lacinia mattis purus consectetur conubia mauris amet nibh consequat turpis dictumst hac ut nullam sodales nunc aenean pharetra, aenean ut sagittis leo massa nisi duis nullam iaculis, nulla ultrices consectetur facilisis curabitur scelerisque quisque primis elit sagittis dictum felis ornare class porta rhoncus lobortis donec praesent curabitur cubilia nec eleifend fringilla fusce vivamus elementum semper nisi conubia dolor, eros habitant nisl suspendisse venenatis interdum nulla interdum, libero urna maecenas potenti nam habitant aliquam donec class sem hendrerit tempus.")
-    # processes, errors = cloud.createByFiles(['path/to/file1', 'path/to/file2'], options)
+        print("Submitting a scan request...")
+        process = cloud.createByFile(os.getcwd()+'/testfile.txt', options)
+        # process = cloud.createByUrl('https://copyleaks.com', options)
+        # process = cloud.createByOcr('ocr-example.jpg', eOcrLanguage.English, options)
+        # process = cloud.createByText("Lorem ipsum torquent placerat quisque rutrum tempor lacinia aliquam habitant ligula arcu faucibus gravida, aenean orci lacinia mattis purus consectetur conubia mauris amet nibh consequat turpis dictumst hac ut nullam sodales nunc aenean pharetra, aenean ut sagittis leo massa nisi duis nullam iaculis, nulla ultrices consectetur facilisis curabitur scelerisque quisque primis elit sagittis dictum felis ornare class porta rhoncus lobortis donec praesent curabitur cubilia nec eleifend fringilla fusce vivamus elementum semper nisi conubia dolor, eros habitant nisl suspendisse venenatis interdum nulla interdum, libero urna maecenas potenti nam habitant aliquam donec class sem hendrerit tempus.")
+        # processes, errors = cloud.createByFiles(['path/to/file1', 'path/to/file2'], options)
 
-    print ("Submitted. In progress...")
-    iscompleted = False
-    while not iscompleted:
-        [iscompleted, percents] = process.isCompleted()
-        print ('%s%s%s%%' % ('#' * int(percents / 2), "-" * (50 - int(percents / 2)), percents))
-        if not iscompleted:
-            time.sleep(2)
-    print ("Process Finished!")
-    results = process.getResults()
-    print ('\nFound %s results...' % (len(results)))
-    for result in results:
-        print('')
-        print('------------------------------------------------')
-        print(result)
-        # print(type(result))
-    if os.path.exists(os.getcwd()+"/testfile.txt"):
-        os.remove(os.getcwd()+"/testfile.txt")
-    return render_template('teachers.html', data=results) 
+        print ("Submitted. In progress...")
+        iscompleted = False
+        while not iscompleted:
+            [iscompleted, percents] = process.isCompleted()
+            print ('%s%s%s%%' % ('#' * int(percents / 2), "-" * (50 - int(percents / 2)), percents))
+            if not iscompleted:
+                time.sleep(2)
+        print ("Process Finished!")
+        results = process.getResults()
+        print ('\nFound %s results...' % (len(results)))
+        for result in results:
+            print('')
+            print('------------------------------------------------')
+            print(result)
+            # print(type(result))
+        if os.path.exists(os.getcwd()+"/testfile.txt"):
+            os.remove(os.getcwd()+"/testfile.txt")
+        return render_template('teachers.html', data=results) 
 
 # USer Register
 @app.route('/register', methods=['GET', 'POST'])
